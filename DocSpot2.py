@@ -8,6 +8,7 @@ def math_eval(mstr):
     mstr = mstr.split(" ")
     print "mstr after join", mstr
     withinbrc = False
+    brcCount = 0
     for m in mstr:
         print "m :", m
         if m not in symbols and m not in braces and  not withinbrc:
@@ -21,14 +22,25 @@ def math_eval(mstr):
             brc = m
             if brc == "(":
                 withinbrc = True
-                nmstr = ""
+                brcCount += 1
+                if brcCount == 1:
+                    nmstr = ""
+                else:
+                    nmstr = nmstr + m + " "
+                
             elif brc == ")":
                 print "nmstr :", nmstr
-                if sym:
-                    temp = doTheMath(sym, temp, opr1, math_eval(nmstr[:-1]))
+                if brcCount == 1:
+                    if sym:
+                        temp = doTheMath(sym, temp, opr1, math_eval(nmstr[:-1]))
+                    else:
+                        temp = math_eval(nmstr[:-1])
+                    withinbrc = False
+                    brcCount = 0
                 else:
-                    temp = math_eval(nmstr[:-1])
-                withinbrc = False
+                    nmstr = nmstr + m + " "
+                    brcCount -= 1
+                    continue
             else:
                 print "nmstr :", nmstr
                 nmstr = nmstr + m + " "
@@ -68,5 +80,5 @@ def doTheMath(sym, temp, opr1, m):
         else:
             temp = temp / float(m)
     return temp
-
+    
 print "output :", math_eval("2 + ( 2.5 ) * 2")
